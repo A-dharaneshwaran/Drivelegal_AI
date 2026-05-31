@@ -1,0 +1,47 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Environment
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build directories
+client/dist/
+client/dist-ssr/
+client/node_modules/
+server/node_modules/
+dist/
+build/
+coverage/
+.vite/
+.next/
+.cache/
+
+# Tesseract OCR Cache
+server/eng.traineddata
+*.traineddata
+
+# Test outputs and validation logs
+server/e2e_validation_report.json
+server/test_report_output.pdf
+server/duplicate_vehicle_audit.md
+*.pdf
+*.log
+
+# IDEs and Editors
+.vscode/
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
