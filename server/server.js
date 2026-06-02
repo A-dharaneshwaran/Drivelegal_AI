@@ -19,6 +19,7 @@ const security = require('./middleware/security');
 const hotspotSeeder = require('./utils/hotspotSeeder');
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 5000;
 
 // 1. Enable secure HTTP headers (Helmet)
@@ -39,6 +40,15 @@ app.use('/api', security.standardLimiter); // Standard rate limit
 app.use('/api/fines/ocr', security.resourceLimiter); // Strict limit for CPU intensive OCR
 app.use('/api/fines/upload', security.resourceLimiter); // Strict limit for CPU intensive Upload
 app.use('/api/ai/chat', security.resourceLimiter); // Strict limit for AI Token operations
+
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    service: 'DriveLegal AI Backend',
+    status: 'Running',
+    timestamp: new Date().toISOString()
+  });
+});
 
 // Routing Mounts
 app.use('/api/auth', authRoutes);
