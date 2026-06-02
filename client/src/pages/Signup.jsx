@@ -125,6 +125,7 @@ const Signup = () => {
     }
 
     setIsLoading(true);
+    console.log("Signup URL:", `${API_URL}/api/auth/signup`);
     try {
       const res = await axios.post(`${API_URL}/api/auth/signup`, {
         ...formData,
@@ -140,30 +141,47 @@ const Signup = () => {
         // Verification email sent, redirect to Verify Email screen with preset email state
         navigate('/verify-email', { state: { email: formData.email } });
       }
-    } catch (err) {
-      const serverMessage = err.response?.data?.message || '';
-      const serverField   = err.response?.data?.field   || '';
-      const status        = err.response?.status;
+    // } catch (err) {
+    //   const serverMessage = err.response?.data?.message || '';
+    //   const serverField   = err.response?.data?.field   || '';
+    //   const status        = err.response?.status;
 
-      // 409 Conflict — uniqueness violation: route error to the correct field inline
-      if (status === 409 || serverField) {
-        if (serverField === 'email' || serverMessage.toLowerCase().includes('email')) {
-          setValidationErrors(prev => ({ ...prev, email: 'This email address is already registered.' }));
-          setError('This email address is already registered.');
-        } else if (serverField === 'username' || serverMessage.toLowerCase().includes('username')) {
-          setValidationErrors(prev => ({ ...prev, username: 'This username is already taken. Please choose another.' }));
-          setError('This username is already taken. Please choose another.');
-        } else if (serverField === 'phone' || serverMessage.toLowerCase().includes('phone number is already')) {
-          setValidationErrors(prev => ({ ...prev, phone: 'This phone number is already linked to an existing account.' }));
-          setError('This phone number is already linked to an existing account.');
-        } else {
-          setError(serverMessage || 'Registration failed. Please check your details.');
-        }
-      } else {
-        // All other server errors (400 validation, 500 server errors)
-        setError(serverMessage || 'Registration failed. Please try again.');
-      }
-    } finally {
+    //   // 409 Conflict — uniqueness violation: route error to the correct field inline
+    //   if (status === 409 || serverField) {
+    //     if (serverField === 'email' || serverMessage.toLowerCase().includes('email')) {
+    //       setValidationErrors(prev => ({ ...prev, email: 'This email address is already registered.' }));
+    //       setError('This email address is already registered.');
+    //     } else if (serverField === 'username' || serverMessage.toLowerCase().includes('username')) {
+    //       setValidationErrors(prev => ({ ...prev, username: 'This username is already taken. Please choose another.' }));
+    //       setError('This username is already taken. Please choose another.');
+    //     } else if (serverField === 'phone' || serverMessage.toLowerCase().includes('phone number is already')) {
+    //       setValidationErrors(prev => ({ ...prev, phone: 'This phone number is already linked to an existing account.' }));
+    //       setError('This phone number is already linked to an existing account.');
+    //     } else {
+    //       setError(serverMessage || 'Registration failed. Please check your details.');
+    //     }
+    //   } else {
+    //     // All other server errors (400 validation, 500 server errors)
+    //     setError(serverMessage || 'Registration failed. Please try again.');
+    //   }
+    // } 
+ } catch (error) {
+  console.error("Signup Error:", error);
+  console.error("Response:", error.response);
+  console.error("Request:", error.request);
+
+  if (error.response) {
+    alert(JSON.stringify(error.response.data));
+  } else {
+    alert(error.message);
+  }
+
+  setError(
+    error.response?.data?.message ||
+    error.message ||
+    "Registration failed"
+  );
+}finally {
       setIsLoading(false);
     }
   };

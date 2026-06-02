@@ -25,8 +25,19 @@ const PORT = process.env.PORT || 5000;
 // 1. Enable secure HTTP headers (Helmet)
 app.use(security.secureHeaders);
 
-// 2. Enable CORS with relaxed local origins for MERN sandbox
-app.use(cors());
+// 2. Enable CORS with credentials and specific origins for mobile compatibility
+app.use(cors({
+  origin: [
+    'capacitor://localhost',
+    'http://localhost',
+    'https://localhost',
+    'https://drivelegalai-production.up.railway.app',
+    /\/\/localhost(:\d+)?$/
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
+}));
 
 // 3. Set payload body parser limits to 50MB
 app.use(express.json({ limit: '50mb' }));
