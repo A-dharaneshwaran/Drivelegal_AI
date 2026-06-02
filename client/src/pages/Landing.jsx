@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Navigation, Brain, Activity, ArrowRight, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+import { API_URL } from '../config/api';
 
 const FeatureCard = ({ icon: Icon, title, desc, delay }) => (
   <motion.div
@@ -58,9 +60,10 @@ const Landing = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
 
   // Contact form state
-  const [formData, setFormData] = useState({ category: '', subject: '', message: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', category: '', subject: '', message: '' });
   const [formErrors, setFormErrors] = useState({});
   const [formStatus, setFormStatus] = useState(null); // 'success' | null
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const handleAuthChange = () => {
@@ -78,29 +81,52 @@ const Landing = () => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     if (formErrors[name]) setFormErrors(prev => ({ ...prev, [name]: '' }));
+    if (formErrors.submit) setFormErrors(prev => ({ ...prev, submit: '' }));
   };
 
   const validateForm = () => {
     const errors = {};
+    if (!formData.name.trim()) errors.name = 'Name is required.';
+    if (!formData.email.trim()) {
+      errors.email = 'Email is required.';
+    } else {
+      const emailRegex = /^\S+@\S+\.\S+$/;
+      if (!emailRegex.test(formData.email)) errors.email = 'Invalid email format.';
+    }
     if (!formData.category) errors.category = 'Category is required.';
     if (!formData.subject.trim()) errors.subject = 'Subject is required.';
     if (!formData.message.trim()) errors.message = 'Message is required.';
     return errors;
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       return;
     }
-    const subject = encodeURIComponent(`[${formData.category}] ${formData.subject}`);
-    const body = encodeURIComponent(`Category: ${formData.category}\nSubject: ${formData.subject}\n\nMessage:\n${formData.message}`);
-    window.location.href = `mailto:Drivelegalai@gmail.com?subject=${subject}&body=${body}`;
-    setFormStatus('success');
-    setFormData({ category: '', subject: '', message: '' });
-    setTimeout(() => setFormStatus(null), 6000);
+    setIsSubmitting(true);
+    setFormStatus(null);
+    try {
+      const payload = {
+        name: formData.name,
+        email: formData.email,
+        subject: `[${formData.category}] ${formData.subject}`,
+        message: formData.message
+      };
+      const res = await axios.post(`${API_URL}/api/contact`, payload);
+      if (res.data?.success) {
+        setFormStatus('success');
+        setFormData({ name: '', email: '', category: '', subject: '', message: '' });
+        setTimeout(() => setFormStatus(null), 6000);
+      }
+    } catch (err) {
+      console.error('Contact form submission failed:', err);
+      setFormErrors({ submit: err.response?.data?.message || 'Failed to send message. Please try again later.' });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -281,11 +307,60 @@ const Landing = () => {
                   className="px-5 py-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-sm font-semibold flex items-center gap-2"
                 >
                   <span className="font-bold">✓</span>
-                  Your email client has been opened. Thank you for reaching out!
+                  Your message has been sent successfully. Thank you for reaching out!
+                </motion.div>
+              )}
+
+              {formErrors.submit && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="px-5 py-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-350 text-sm font-semibold flex items-center gap-2"
+                >
+                  <span className="font-bold">✗</span>
+                  {formErrors.submit}
                 </motion.div>
               )}
 
               <form onSubmit={handleFormSubmit} className="space-y-5" noValidate>
+
+                {/* Name */}
+                <div>
+                  <label htmlFor="contact-name" className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
+                    Full Name <span className="text-rose-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    id="contact-name"
+                    value={formData.name}
+                    onChange={handleFormChange}
+                    placeholder="Your name"
+                    className={`w-full bg-slate-800/60 border rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-2 transition-all ${
+                      formErrors.name ? 'border-rose-500/60 focus:ring-rose-500/20' : 'border-slate-700/60 focus:ring-sky-500/30 focus:border-sky-500/50'
+                    }`}
+                  />
+                  {formErrors.name && <p className="mt-1.5 text-[11px] text-rose-400 font-semibold">{formErrors.name}</p>}
+                </div>
+
+                {/* Email */}
+                <div>
+                  <label htmlFor="contact-email" className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
+                    Email Address <span className="text-rose-400">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    id="contact-email"
+                    value={formData.email}
+                    onChange={handleFormChange}
+                    placeholder="you@example.com"
+                    className={`w-full bg-slate-800/60 border rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-2 transition-all ${
+                      formErrors.email ? 'border-rose-500/60 focus:ring-rose-500/20' : 'border-slate-700/60 focus:ring-sky-500/30 focus:border-sky-500/50'
+                    }`}
+                  />
+                  {formErrors.email && <p className="mt-1.5 text-[11px] text-rose-400 font-semibold">{formErrors.email}</p>}
+                </div>
 
                 {/* Category Dropdown */}
                 <div>
@@ -352,16 +427,17 @@ const Landing = () => {
 
                 <motion.button
                   type="submit"
+                  disabled={isSubmitting}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full px-6 py-3.5 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 text-white font-extrabold text-sm shadow-lg shadow-sky-500/20 hover:shadow-sky-500/30 transition-all flex items-center justify-center gap-2"
+                  className="w-full px-6 py-3.5 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 text-white font-extrabold text-sm shadow-lg shadow-sky-500/20 hover:shadow-sky-500/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <span>Send Message</span>
+                  <span>{isSubmitting ? 'Sending Message...' : 'Send Message'}</span>
                   <ArrowRight className="w-4 h-4" />
                 </motion.button>
 
                 <p className="text-center text-[10px] text-slate-600 mt-1">
-                  Clicking "Send Message" will open your default email client.
+                  Your message will be sent securely to the DriveLegal Compliance Team.
                 </p>
               </form>
             </motion.div>

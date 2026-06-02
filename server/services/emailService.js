@@ -350,6 +350,7 @@ const sendVerificationEmail = async (user, verificationToken) => {
 };
 
 module.exports = {
+  sendEmail,
   sendFineDueEmail,
   sendFineDueTomorrowEmail,
   sendFineOverdueEmail,

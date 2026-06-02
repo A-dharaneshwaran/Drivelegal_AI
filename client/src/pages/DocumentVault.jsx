@@ -23,8 +23,8 @@ import {
   RefreshCw
 } from 'lucide-react';
 import axios from 'axios';
+import { API_URL } from '../config/api';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CLIENT-SIDE DOCUMENT DATE VALIDATION ENGINE
@@ -345,9 +345,9 @@ const DocumentVault = () => {
 
   const loadVaultData = async () => {
     try {
-      const docsRes = await axios.get(`${API_URL}/documents`, getAuthHeaders());
+      const docsRes = await axios.get(`${API_URL}/api/documents`, getAuthHeaders());
       if (docsRes.data?.success) setDocuments(docsRes.data.documents);
-      const vehsRes = await axios.get(`${API_URL}/vehicles`, getAuthHeaders());
+      const vehsRes = await axios.get(`${API_URL}/api/vehicles`, getAuthHeaders());
       if (vehsRes.data?.success) setVehicles(vehsRes.data.vehicles);
     } catch (err) {
       console.error('Failed to load vault data:', err.message);
@@ -374,7 +374,7 @@ const DocumentVault = () => {
     }, 2800);
 
     try {
-      const res = await axios.post(`${API_URL}/documents/ocr-preflight`, formData, {
+      const res = await axios.post(`${API_URL}/api/documents/ocr-preflight`, formData, {
         headers: { ...getAuthHeaders().headers, 'Content-Type': 'multipart/form-data' }
       });
       clearTimeout(progressTimer);
@@ -421,7 +421,7 @@ const DocumentVault = () => {
     setUploadProgress('Saving confirmed document & updating compliance score...');
 
     try {
-      const res = await axios.post(`${API_URL}/documents/ocr-confirm`, {
+      const res = await axios.post(`${API_URL}/api/documents/ocr-confirm`, {
         documentType: preflightData.documentType,
         vehicleId: preflightData.vehicleId,
         documentNumber: reviewFields.documentNumber,
@@ -469,7 +469,7 @@ const DocumentVault = () => {
     }
 
     try {
-      const res = await axios.post(`${API_URL}/documents/manual`, {
+      const res = await axios.post(`${API_URL}/api/documents/manual`, {
         documentType: manualType,
         documentNumber: manualNumber,
         issueDate: manualIssue,
@@ -497,7 +497,7 @@ const DocumentVault = () => {
   const handleDeleteDoc = async (id, docType) => {
     if (!window.confirm(`Delete this ${docType}? This will impact your Compliance Score.`)) return;
     try {
-      const res = await axios.delete(`${API_URL}/documents/${id}`, getAuthHeaders());
+      const res = await axios.delete(`${API_URL}/api/documents/${id}`, getAuthHeaders());
       if (res.data?.success) { triggerToast(`${docType} deleted.`, 'success'); loadVaultData(); }
     } catch (err) { triggerToast('Failed to delete document.', 'error'); }
   };
@@ -511,7 +511,7 @@ const DocumentVault = () => {
       return;
     }
     try {
-      const res = await axios.put(`${API_URL}/documents/update/${editingDoc._id}`, {
+      const res = await axios.put(`${API_URL}/api/documents/update/${editingDoc._id}`, {
         documentNumber: editNumber,
         issueDate: editIssue || undefined,
         expiryDate: editExpiry,

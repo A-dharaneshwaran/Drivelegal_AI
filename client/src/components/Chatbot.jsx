@@ -2,8 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, X, Send, Bot, AlertCircle, Sparkles } from 'lucide-react';
 import axios from 'axios';
+import { API_URL } from '../config/api';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 /**
  * DriveLegal AI Chatbot component.
@@ -57,7 +57,7 @@ const Chatbot = ({ onChatSuccess }) => {
     try {
       // Auth header required — backend increments trafficAssistantChatsCount ONLY on success
       const response = await axios.post(
-        `${API_URL}/ai/chat`,
+        `${API_URL}/api/ai/chat`,
         {
           prompt,
           history: messages.map(msg => ({

@@ -4,7 +4,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { Mail, ArrowRight, ShieldCheck, CheckCircle2, XCircle, RefreshCw } from 'lucide-react';
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+import { API_URL } from '../config/api';
 
 const VerifyEmail = () => {
   const [searchParams] = useSearchParams();
@@ -20,7 +20,7 @@ const VerifyEmail = () => {
     setIsLoading(true);
     setStatus('loading');
     try {
-      const res = await axios.get(`${API_URL}/auth/verify-email`, {
+      const res = await axios.get(`${API_URL}/api/auth/verify-email`, {
         params: { token: verifyToken }
       });
       if (res.data?.success) {
@@ -48,7 +48,7 @@ const VerifyEmail = () => {
     setResendStatus('');
     setResendError('');
     try {
-      const res = await axios.post(`${API_URL}/auth/resend-verification`, { email });
+      const res = await axios.post(`${API_URL}/api/auth/resend-verification`, { email });
       if (res.data?.success) {
         setResendStatus('success');
       }

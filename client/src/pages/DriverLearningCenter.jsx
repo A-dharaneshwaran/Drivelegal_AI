@@ -1,4 +1,7 @@
 import { useState, useMemo } from 'react';
+import axios from 'axios';
+import { API_URL } from '../config/api';
+
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   MapPin,
@@ -596,8 +599,7 @@ const StateTrafficExplorer = () => {
     const token = localStorage.getItem('token');
     if (!token) return;
     try {
-      const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-      await axios.post(`${apiBase}/auth/learning/view`, { moduleId }, {
+      await axios.post(`${API_URL}/api/auth/learning/view`, { moduleId }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       // Dispatch authentication state changed event so Navbar updates scores in real-time

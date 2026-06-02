@@ -27,6 +27,7 @@ import {
   Check
 } from 'lucide-react';
 import axios from 'axios';
+import { API_URL } from '../config/api';
 import {
   getTravelReadiness,
   getComplianceStatus,
@@ -34,7 +35,6 @@ import {
   getAwarenessLevel
 } from '../utils/scoreRules';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const Dashboard = () => {
   const editModalRef = useRef(null);
@@ -96,7 +96,7 @@ const Dashboard = () => {
     if (!token) return;
     try {
       // 1. Fines & Analytics
-      const finesRes = await axios.get(`${API_URL}/fines`, getAuthHeaders());
+      const finesRes = await axios.get(`${API_URL}/api/fines`, getAuthHeaders());
       if (finesRes.data?.success) {
         const list = finesRes.data.fines;
         const pending = list.filter(f => f.status === 'Pending' || f.status === 'Overdue');
@@ -113,7 +113,7 @@ const Dashboard = () => {
       }
 
       // 2. Recent Unread Notifications
-      const notifRes = await axios.get(`${API_URL}/notifications`, {
+      const notifRes = await axios.get(`${API_URL}/api/notifications`, {
         headers: getAuthHeaders().headers,
         params: { isRead: 'false', limit: 3 }
       });
@@ -122,31 +122,31 @@ const Dashboard = () => {
       }
 
       // 3. Sync unread count
-      const countRes = await axios.get(`${API_URL}/notifications/unread-count`, getAuthHeaders());
+      const countRes = await axios.get(`${API_URL}/api/notifications/unread-count`, getAuthHeaders());
       if (countRes.data?.success) {
         setUnreadCount(countRes.data.count);
       }
 
       // 4. User Settings Preferences
-      const profileRes = await axios.get(`${API_URL}/auth/profile`, getAuthHeaders());
+      const profileRes = await axios.get(`${API_URL}/api/auth/profile`, getAuthHeaders());
       if (profileRes.data?.success && profileRes.data.user.notificationSettings) {
         setSettings(profileRes.data.user.notificationSettings);
       }
 
       // 5. Smart Document Vault status
-      const docsRes = await axios.get(`${API_URL}/documents`, getAuthHeaders());
+      const docsRes = await axios.get(`${API_URL}/api/documents`, getAuthHeaders());
       if (docsRes.data?.success) {
         setDocuments(docsRes.data.documents);
       }
 
       // 6. Registered vehicles
-      const vehsRes = await axios.get(`${API_URL}/vehicles`, getAuthHeaders());
+      const vehsRes = await axios.get(`${API_URL}/api/vehicles`, getAuthHeaders());
       if (vehsRes.data?.success) {
         setVehicles(vehsRes.data.vehicles);
       }
 
       // 7. Telemetry compliance scores
-      const telRes = await axios.get(`${API_URL}/auth/telemetry`, getAuthHeaders());
+      const telRes = await axios.get(`${API_URL}/api/auth/telemetry`, getAuthHeaders());
       if (telRes.data?.success) {
         setTelemetry(telRes.data.telemetry);
       }
@@ -185,7 +185,7 @@ const Dashboard = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const res = await axios.put(`${API_URL}/auth/notification-settings`, settings, getAuthHeaders());
+      const res = await axios.put(`${API_URL}/api/auth/notification-settings`, settings, getAuthHeaders());
       if (res.data?.success) {
         triggerToast("Preferences saved successfully!", "success");
       }
@@ -222,7 +222,7 @@ const Dashboard = () => {
     }
     setIsLoading(true);
     try {
-      const res = await axios.post(`${API_URL}/vehicles`, {
+      const res = await axios.post(`${API_URL}/api/vehicles`, {
         plateNumber: newPlate,
         make: newMake,
         model: newModel,
@@ -276,7 +276,7 @@ const Dashboard = () => {
     }
     setIsLoading(true);
     try {
-      const res = await axios.put(`${API_URL}/vehicles/${vehicleToEdit._id}`, {
+      const res = await axios.put(`${API_URL}/api/vehicles/${vehicleToEdit._id}`, {
         registrationNumber: editPlate,
         make: editMake,
         model: editModel,
@@ -364,7 +364,7 @@ const Dashboard = () => {
     if (!vehicleToDelete || isDeletingVehicle) return;
     setIsDeletingVehicle(true);
     try {
-      const res = await axios.delete(`${API_URL}/vehicles/${vehicleToDelete}`, getAuthHeaders());
+      const res = await axios.delete(`${API_URL}/api/vehicles/${vehicleToDelete}`, getAuthHeaders());
       if (res.data?.success) {
         triggerToast("Vehicle deleted successfully.", "success");
         setVehicleToDelete(null);
@@ -381,7 +381,7 @@ const Dashboard = () => {
   // Fetch hotspots & past reports on component mount
   const loadDatabaseData = async () => {
     try {
-      const reportsRes = await axios.get(`${API_URL}/navigation/past-reports`, getAuthHeaders());
+      const reportsRes = await axios.get(`${API_URL}/api/navigation/past-reports`, getAuthHeaders());
       if (reportsRes.data?.success) {
         setPastReports(reportsRes.data.reports);
       }

@@ -18,8 +18,8 @@ import {
   ArrowUpDown
 } from 'lucide-react';
 import axios from 'axios';
+import { API_URL } from '../config/api';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
@@ -54,7 +54,7 @@ const Notifications = () => {
         typeFilter = 'fine_overdue'; // Custom action alerts filter
       }
 
-      const res = await axios.get(`${API_URL}/notifications`, {
+      const res = await axios.get(`${API_URL}/api/notifications`, {
         headers: headers.headers,
         params: {
           search,
@@ -72,7 +72,7 @@ const Notifications = () => {
       }
 
       // Sync unread count too
-      const countRes = await axios.get(`${API_URL}/notifications/unread-count`, headers);
+      const countRes = await axios.get(`${API_URL}/api/notifications/unread-count`, headers);
       if (countRes.data?.success) {
         setUnreadCount(countRes.data.count);
       }
@@ -91,7 +91,7 @@ const Notifications = () => {
 
   const handleMarkAsRead = async (id) => {
     try {
-      const res = await axios.put(`${API_URL}/notifications/read/${id}`, {}, headers);
+      const res = await axios.put(`${API_URL}/api/notifications/read/${id}`, {}, headers);
       if (res.data?.success) {
         triggerToast("Alert marked as read");
         fetchNotifications();
@@ -105,7 +105,7 @@ const Notifications = () => {
 
   const handleMarkAllRead = async () => {
     try {
-      const res = await axios.put(`${API_URL}/notifications/read-all`, {}, headers);
+      const res = await axios.put(`${API_URL}/api/notifications/read-all`, {}, headers);
       if (res.data?.success) {
         triggerToast("All alerts marked as read");
         fetchNotifications();
@@ -119,7 +119,7 @@ const Notifications = () => {
 
   const handleDeleteNotification = async (id) => {
     try {
-      const res = await axios.delete(`${API_URL}/notifications/${id}`, headers);
+      const res = await axios.delete(`${API_URL}/api/notifications/${id}`, headers);
       if (res.data?.success) {
         triggerToast("Notification successfully deleted");
         fetchNotifications();

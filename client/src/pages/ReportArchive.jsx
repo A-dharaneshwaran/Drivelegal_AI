@@ -11,8 +11,8 @@ import {
   BookOpen, RefreshCw, CreditCard, ChevronDown
 } from 'lucide-react';
 import axios from 'axios';
+import { API_URL } from '../config/api';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 import {
   getTravelReadiness,
@@ -123,10 +123,10 @@ const ReportArchive = () => {
     setIsLoading(true);
     try {
       const [snapRes, anaRes, repRes, tlRes] = await Promise.all([
-        axios.get(`${API_URL}/reports/dashboard`,  getAuth()),
-        axios.get(`${API_URL}/reports/analytics`,  getAuth()),
-        axios.get(`${API_URL}/reports`,            getAuth()),
-        axios.get(`${API_URL}/reports/timeline`,   getAuth()),
+        axios.get(`${API_URL}/api/reports/dashboard`,  getAuth()),
+        axios.get(`${API_URL}/api/reports/analytics`,  getAuth()),
+        axios.get(`${API_URL}/api/reports`,            getAuth()),
+        axios.get(`${API_URL}/api/reports/timeline`,   getAuth()),
       ]);
       if (snapRes.data?.success) setSnapshot(snapRes.data.snapshot);
       if (anaRes.data?.success)  setAnalytics(anaRes.data.analytics);
@@ -148,7 +148,7 @@ const ReportArchive = () => {
   const handleCompile = async () => {
     setIsCompiling(true);
     try {
-      const res = await axios.post(`${API_URL}/reports/generate`, {}, getAuth());
+      const res = await axios.post(`${API_URL}/api/reports/generate`, {}, getAuth());
       if (res.data?.success) {
         showToast('Report compiled successfully!', 'success');
         loadAll();
@@ -164,7 +164,7 @@ const ReportArchive = () => {
     setDownloadingId(reportId);
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get(`${API_URL}/reports/pdf/${reportId}`, {
+      const res = await axios.get(`${API_URL}/api/reports/pdf/${reportId}`, {
         headers: { Authorization: `Bearer ${token}` },
         responseType: 'blob'
       });

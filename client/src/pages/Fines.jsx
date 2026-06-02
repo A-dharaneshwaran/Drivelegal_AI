@@ -26,8 +26,8 @@ import {
   RefreshCw
 } from 'lucide-react';
 import axios from 'axios';
+import { API_URL } from '../config/api';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const Fines = () => {
   // Lists and Stats - starts completely empty, no preloaded mock data
@@ -158,7 +158,7 @@ const Fines = () => {
   const loadDashboardData = async () => {
     setIsLoading(true);
     try {
-      const analyticsRes = await axios.get(`${API_URL}/fines/analytics`, getAuthHeaders());
+      const analyticsRes = await axios.get(`${API_URL}/api/fines/analytics`, getAuthHeaders());
       if (analyticsRes.data?.success) {
         setAnalytics(analyticsRes.data.analytics);
       }
@@ -169,7 +169,7 @@ const Fines = () => {
         sortBy: sortBy
       };
       
-      const listRes = await axios.get(`${API_URL}/fines`, { params, ...getAuthHeaders() });
+      const listRes = await axios.get(`${API_URL}/api/fines`, { params, ...getAuthHeaders() });
       if (listRes.data?.success) {
         setFines(listRes.data.fines);
       }
@@ -245,7 +245,7 @@ const Fines = () => {
 
     setIsSubmitting(true);
     try {
-      const res = await axios.post(`${API_URL}/fines/create`, manualForm, getAuthHeaders());
+      const res = await axios.post(`${API_URL}/api/fines/create`, manualForm, getAuthHeaders());
       if (res.data?.success) {
         triggerToast('Traffic Fine logged successfully!', 'success');
         setShowAddManual(false);
@@ -349,7 +349,7 @@ const Fines = () => {
 
     try {
       // POST multipart/form-data to backend real OCR endpoint
-      const res = await axios.post(`${API_URL}/fines/ocr`, formData, {
+      const res = await axios.post(`${API_URL}/api/fines/ocr`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           ...getAuthHeaders().headers
@@ -413,7 +413,7 @@ const Fines = () => {
 
     setIsSettling(true);
     try {
-      const res = await axios.put(`${API_URL}/fines/mark-paid/${selectedFine._id}`, settlementForm, getAuthHeaders());
+      const res = await axios.put(`${API_URL}/api/fines/mark-paid/${selectedFine._id}`, settlementForm, getAuthHeaders());
       if (res.data?.success) {
         triggerToast('Fine marked as Paid. Scheduler reminders disabled.', 'success');
         setShowMarkPaid(false);
@@ -438,7 +438,7 @@ const Fines = () => {
     if (!window.confirm('Are you sure you want to delete this traffic fine record?')) return;
 
     try {
-      const res = await axios.delete(`${API_URL}/fines/${id}`, getAuthHeaders());
+      const res = await axios.delete(`${API_URL}/api/fines/${id}`, getAuthHeaders());
       if (res.data?.success) {
         triggerToast('Fine record deleted successfully.', 'success');
         loadDashboardData();
@@ -462,7 +462,7 @@ const Fines = () => {
     try {
       // Auth header required — backend JWT middleware tracks AI interactions per user
       const response = await axios.post(
-        `${API_URL}/ai/chat`,
+        `${API_URL}/api/ai/chat`,
         { prompt: userMessage.text, history: aiResponses.slice(-6) },
         getAuthHeaders()
       );

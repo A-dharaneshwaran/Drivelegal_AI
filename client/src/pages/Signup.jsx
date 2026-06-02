@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { User, Lock, Mail, ArrowRight, ShieldCheck, Eye, EyeOff, Phone, CheckCircle, XCircle } from 'lucide-react';
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+import { API_URL } from '../config/api';
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -126,7 +126,7 @@ const Signup = () => {
 
     setIsLoading(true);
     try {
-      const res = await axios.post(`${API_URL}/auth/signup`, {
+      const res = await axios.post(`${API_URL}/api/auth/signup`, {
         ...formData,
         confirmPassword
       });

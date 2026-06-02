@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import { API_URL } from '../config/api';
 
 const PRESET_AVATARS = [
   { id: 'shield', value: '🛡️' },
@@ -15,8 +16,6 @@ const PRESET_AVATARS = [
   { id: 'alert', value: '⚠️' },
   { id: 'user', value: '🚗' }
 ];
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 // Primary nav links — always visible on desktop
 const PRIMARY_NAV = [
@@ -85,7 +84,7 @@ const Navbar = () => {
   const fetchUnreadCount = async () => {
     if (!token) return;
     try {
-      const res = await axios.get(`${API_URL}/notifications/unread-count`, {
+      const res = await axios.get(`${API_URL}/api/notifications/unread-count`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.data?.success) setUnreadCount(res.data.count);
@@ -95,7 +94,7 @@ const Navbar = () => {
   const fetchProfile = async () => {
     if (!token) return;
     try {
-      const res = await axios.get(`${API_URL}/auth/profile`, {
+      const res = await axios.get(`${API_URL}/api/auth/profile`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.data?.success) setUser(res.data.user);
@@ -105,7 +104,7 @@ const Navbar = () => {
   const fetchRecentNotifications = async () => {
     if (!token) return;
     try {
-      const res = await axios.get(`${API_URL}/notifications`, {
+      const res = await axios.get(`${API_URL}/api/notifications`, {
         headers: { Authorization: `Bearer ${token}` },
         params: { limit: 5 }
       });
@@ -116,7 +115,7 @@ const Navbar = () => {
   const markAsRead = async (id, e) => {
     e.stopPropagation();
     try {
-      const res = await axios.put(`${API_URL}/notifications/read/${id}`, {}, {
+      const res = await axios.put(`${API_URL}/api/notifications/read/${id}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.data?.success) {
@@ -130,7 +129,7 @@ const Navbar = () => {
   const markAllAsRead = async (e) => {
     e.stopPropagation();
     try {
-      const res = await axios.put(`${API_URL}/notifications/read-all`, {}, {
+      const res = await axios.put(`${API_URL}/api/notifications/read-all`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.data?.success) {

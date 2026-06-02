@@ -12,6 +12,7 @@ const notificationRoutes = require('./routes/notifications');
 const vehicleRoutes = require('./routes/vehicles');
 const documentRoutes = require('./routes/documents');
 const reportRoutes = require('./routes/reports');
+const contactRoutes = require('./routes/contact');
 const reminderScheduler = require('./services/reminderScheduler');
 const errorHandler = require('./middleware/errorHandler');
 const security = require('./middleware/security');
@@ -49,6 +50,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/vehicles', vehicleRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/contact', contactRoutes);
 
 // Centralized Global Error Handler Middleware
 app.use(errorHandler);

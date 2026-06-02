@@ -4,8 +4,8 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Lock, Mail, ArrowRight, ShieldCheck, Eye, EyeOff, CheckCircle, XCircle } from 'lucide-react';
 import axios from 'axios';
 import AuthMessage from '../components/AuthMessage';
+import { API_URL } from '../config/api';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -32,7 +32,7 @@ const Login = () => {
     setResendSuccess('');
     setError('');
     try {
-      const res = await axios.post(`${API_URL}/auth/resend-verification`, {
+      const res = await axios.post(`${API_URL}/api/auth/resend-verification`, {
         email: unverifiedEmail
       });
       if (res.data?.success) {
@@ -72,7 +72,7 @@ const Login = () => {
 
     setIsLoading(true);
     try {
-      const res = await axios.post(`${API_URL}/auth/login`, formData);
+      const res = await axios.post(`${API_URL}/api/auth/login`, formData);
       localStorage.setItem('token', res.data.token);
       
       // Dispatch authentication state changed event for Navbar reactivity

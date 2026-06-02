@@ -11,8 +11,8 @@ import {
   EyeOff, Globe, Monitor, Smartphone, CheckCircle, AlertCircle, Edit2, Camera, XCircle
 } from 'lucide-react';
 import axios from 'axios';
+import { API_URL } from '../config/api';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 import {
   getTravelReadiness,
@@ -157,7 +157,7 @@ const Profile = () => {
     setIsLoading(true);
     try {
       // 1. Fetch main user profile
-      const userRes = await axios.get(`${API_URL}/auth/profile`, getAuthHeaders());
+      const userRes = await axios.get(`${API_URL}/api/auth/profile`, getAuthHeaders());
       if (userRes.data?.success) {
         const u = userRes.data.user;
         setUser(u);
@@ -172,19 +172,19 @@ const Profile = () => {
       }
 
       // 2. Fetch statistics
-      const statsRes = await axios.get(`${API_URL}/auth/profile/statistics`, getAuthHeaders());
+      const statsRes = await axios.get(`${API_URL}/api/auth/profile/statistics`, getAuthHeaders());
       if (statsRes.data?.success) {
         setStats(statsRes.data.statistics);
       }
 
       // 3. Fetch activity log
-      const actRes = await axios.get(`${API_URL}/auth/profile/activity`, getAuthHeaders());
+      const actRes = await axios.get(`${API_URL}/api/auth/profile/activity`, getAuthHeaders());
       if (actRes.data?.success) {
         setActivities(actRes.data.activity);
       }
 
       // 4. Fetch analytics charts
-      const anaRes = await axios.get(`${API_URL}/reports/analytics`, getAuthHeaders());
+      const anaRes = await axios.get(`${API_URL}/api/reports/analytics`, getAuthHeaders());
       if (anaRes.data?.success) {
         setAnalytics(anaRes.data.analytics);
       }
@@ -210,7 +210,7 @@ const Profile = () => {
     e.preventDefault();
     setIsSavingSettings(true);
     try {
-      const res = await axios.put(`${API_URL}/auth/profile/update`, {
+      const res = await axios.put(`${API_URL}/api/auth/profile/update`, {
         name: nameInput,
         avatar: avatarInput
       }, getAuthHeaders());
@@ -250,7 +250,7 @@ const Profile = () => {
 
     setIsSavingSettings(true);
     try {
-      const res = await axios.put(`${API_URL}/auth/profile/password`, {
+      const res = await axios.put(`${API_URL}/api/auth/profile/password`, {
         currentPassword,
         newPassword
       }, getAuthHeaders());
@@ -283,7 +283,7 @@ const Profile = () => {
   // Save Notification Preferences
   const saveNotificationSettings = async (email, dashboard, prefs, enabledVal) => {
     try {
-      await axios.put(`${API_URL}/auth/notification-settings`, {
+      await axios.put(`${API_URL}/api/auth/notification-settings`, {
         enabled: enabledVal !== undefined ? enabledVal : notificationsEnabled,
         emailReminders: email,
         dashboardAlerts: dashboard,
@@ -455,7 +455,7 @@ const Profile = () => {
                   <button
                     onClick={async () => {
                       try {
-                        const res = await axios.post(`${API_URL}/auth/resend-verification`, { email: user?.email }, getAuthHeaders());
+                        const res = await axios.post(`${API_URL}/api/auth/resend-verification`, { email: user?.email }, getAuthHeaders());
                         if (res.data?.success) {
                           showToast('success', res.data.message || 'Verification email resent.');
                         }

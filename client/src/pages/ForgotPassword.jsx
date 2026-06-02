@@ -3,8 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Mail, ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+import { API_URL } from '../config/api';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -18,7 +17,7 @@ const ForgotPassword = () => {
     setError('');
     setSuccess('');
     try {
-      const res = await axios.post(`${API_URL}/auth/forgot-password`, { email });
+      const res = await axios.post(`${API_URL}/api/auth/forgot-password`, { email });
       if (res.data?.success) {
         setSuccess(res.data.message || 'If an account exists, a reset link has been sent.');
       }

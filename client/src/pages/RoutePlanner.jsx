@@ -38,7 +38,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+import { API_URL } from '../config/api';
 
 const INDIA_BOUNDS = [
   [6.5, 68.0],
@@ -234,27 +234,27 @@ const RoutePlanner = () => {
   const fetchBaseData = async () => {
     if (!token) return;
     try {
-      const telRes = await axios.get(`${API_URL}/auth/telemetry`, getAuthHeaders());
+      const telRes = await axios.get(`${API_URL}/api/auth/telemetry`, getAuthHeaders());
       if (telRes.data?.success) {
         setTelemetry(telRes.data.telemetry);
       }
 
-      const docsRes = await axios.get(`${API_URL}/documents`, getAuthHeaders());
+      const docsRes = await axios.get(`${API_URL}/api/documents`, getAuthHeaders());
       if (docsRes.data?.success) {
         setDocuments(docsRes.data.documents);
       }
 
-      const reportsRes = await axios.get(`${API_URL}/navigation/past-reports`, getAuthHeaders());
+      const reportsRes = await axios.get(`${API_URL}/api/navigation/past-reports`, getAuthHeaders());
       if (reportsRes.data?.success) {
         setPastReports(reportsRes.data.reports.slice(0, 10));
       }
 
-      const spotsRes = await axios.get(`${API_URL}/navigation/hotspots`);
+      const spotsRes = await axios.get(`${API_URL}/api/navigation/hotspots`);
       if (spotsRes.data?.success) {
         setHotspotsList(spotsRes.data.hotspots);
       }
 
-      const zonesRes = await axios.get(`${API_URL}/navigation/enforcement-zones`);
+      const zonesRes = await axios.get(`${API_URL}/api/navigation/enforcement-zones`);
       if (zonesRes.data?.success) {
         setEnforcementZones(zonesRes.data.zones);
       }
@@ -368,7 +368,7 @@ const RoutePlanner = () => {
     setShowDestDropdown(false);
 
     try {
-      const res = await axios.post(`${API_URL}/navigation/analyze`, {
+      const res = await axios.post(`${API_URL}/api/navigation/analyze`, {
         source: startPoint,
         destination: endPoint
       }, getAuthHeaders());
@@ -395,7 +395,7 @@ const RoutePlanner = () => {
         setIsSidebarCollapsed(false); // Open sidebar to display route metrics
 
         // Reload past reports history list
-        const reportsRes = await axios.get(`${API_URL}/navigation/past-reports`, getAuthHeaders());
+        const reportsRes = await axios.get(`${API_URL}/api/navigation/past-reports`, getAuthHeaders());
         if (reportsRes.data?.success) {
           setPastReports(reportsRes.data.reports.slice(0, 10));
         }
@@ -419,7 +419,7 @@ const RoutePlanner = () => {
     setEndPoint(report.destination);
 
     try {
-      const res = await axios.post(`${API_URL}/navigation/analyze`, {
+      const res = await axios.post(`${API_URL}/api/navigation/analyze`, {
         source: report.source,
         destination: report.destination
       }, getAuthHeaders());
@@ -459,7 +459,7 @@ const RoutePlanner = () => {
     }
     triggerToast("Generating your PDF report...", "success");
     try {
-      const response = await axios.get(`${API_URL}/navigation/pdf/${routeData.savedReportId}`, {
+      const response = await axios.get(`${API_URL}/api/navigation/pdf/${routeData.savedReportId}`, {
         ...getAuthHeaders(),
         responseType: 'blob'
       });
